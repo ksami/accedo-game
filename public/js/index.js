@@ -14,34 +14,40 @@ var COLORS = [
 var COLOR_BORDER = "#000000";
 var COLOR_COVER = "#cfcfc4";
 var COLOR_DONE = "#dfdfdf";
+var COLOR_CURSOR = "#ff0000";
 
-var actual = _.shuffle(_.concat(COLORS, COLORS));
+// Populate grid with random paired colors
+var actual = _.chunk(_.shuffle(_.concat(COLORS, COLORS)), GRID_ROWS);
 var covers = [];
+var panels = [];
 
+// Draw grid
 for (var i = 0; i < GRID_ROWS; i++) {
   covers[i] = [];
+  panels[i] = [];
 
   for (var j = 0; j < GRID_COLS; j++) {
     var rect = new Rectangle(new Point(j*SIZE, i*SIZE), new Size(SIZE, SIZE));
     var panel = new Path.Rectangle(rect);
-    panel.strokeColor = "black";
-    panel.fillColor = actual[i*GRID_ROWS+j];
+    panel.strokeColor = COLOR_BORDER;
+    panel.fillColor = actual[i][j];
     
     var cover = panel.clone();
     cover.fillColor = COLOR_COVER;
     
     covers[i][j] = cover;
+    panels[i][j] = panel;
   }
 
 }
 
-
+// Draw cursor
 var cursor = new Path.Rectangle(new Rectangle(new Point(0, 0), new Size(SIZE, SIZE)));
-cursor.strokeColor = "red";
-cursor.fillColor = "white";
-cursor.opacity = 0.45;
+cursor.strokeColor = COLOR_CURSOR;
+cursor.strokeWidth = 2;
 cursor.i = 0;
 cursor.j = 0;
+
 
 
 function onKeyDown(event){
@@ -70,20 +76,34 @@ var openPanels = [];
 
 function onKeyUp(event){
   var key = event.key;
+  var isNotSamePanel = (openPanels.length === 0) || !(openPanels[0].i === cursor.i && openPanels[0].j === cursor.j);
 
-  if(key === "enter"){
+  if(key === "enter" &&
+    isNotSamePanel &&
+    panels[cursor.i][cursor.j].visible &&
+    covers[cursor.i][cursor.j].visible){
+
     covers[cursor.i][cursor.j].visible = false;
     openPanels.push({i: cursor.i, j: cursor.j});
 
+    // 2 panels open
     if(openPanels.length !== 0 && openPanels.length%2 === 0){
-      var timer = setTimeout(function(){
-        var prev = openPanels.shift();
-        var curr = openPanels.shift();
-        covers[prev.i][prev.j].visible = true;
-        covers[curr.i][curr.j].visible = true;
-        console.log("timer done");
-      }, 1000);
-      console.log(timer);
+      var prev = openPanels.shift();
+      var curr = openPanels.shift();
+
+      // Correctness condition
+      if(actual[prev.i][prev.j] === actual[curr.i][curr.j]){
+        panels[prev.i][prev.j].visible = false;
+        panels[curr.i][curr.j].visible = false;
+      }
+      else{
+        setTimeout(function(){
+          covers[prev.i][prev.j].visible = true;
+          covers[curr.i][curr.j].visible = true;
+          paper.view.draw();
+        }, 750);
+      }
+
     }
 
   }
