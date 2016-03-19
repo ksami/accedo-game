@@ -1,0 +1,29 @@
+#game {
+  width: 720px;
+  height: 476px;
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+  padding: 20px;
+}
+
+#paperjs {
+  width: 700px;
+  height: 456px;
+}
+
+#uiContainer {
+  position: relative;
+}
+
+#logo {
+  position: absolute;
+  right: 35px;
+}
+
+#gameInfo {
+  width: 200px;
+  position: absolute;
+  right: 20px;
+  top: 60px;
+}

@@ -14,8 +14,10 @@ var COLORS = [
 ];
 var COLOR_BORDER = "#000000";
 var COLOR_COVER = "#cfcfc4";
-var COLOR_DONE = "#dfdfdf";
+var COLOR_BUTTON = "#000000";
 var COLOR_CURSOR = "#ff0000";
+var UI_POS_X = GRID_COLS*GRID_SIZE + 100;  // px
+var UI_SIZE_X = 200;  // px
 
 // Populate grid with random paired colors
 var availableColors = _.take(COLORS, GRID_ROWS*GRID_COLS/2);
@@ -43,12 +45,34 @@ for (var i = 0; i < GRID_ROWS; i++) {
 
 }
 
+
+var border = new Path.Rectangle(new Rectangle(new Point(0, 0), new Size(GRID_SIZE*GRID_COLS, GRID_SIZE*GRID_ROWS)));
+border.strokeColor = COLOR_BORDER;
+
+
 // Draw cursor
 var cursor = new Path.Rectangle(new Rectangle(new Point(0, 0), new Size(GRID_SIZE, GRID_SIZE)));
 cursor.strokeColor = COLOR_CURSOR;
 cursor.strokeWidth = 2;
 cursor.i = 0;
 cursor.j = 0;
+
+
+var button = new Path.Rectangle(new Rectangle(new Point(UI_POS_X, 350), new Size(200, 50)));
+button.strokeColor = COLOR_BORDER;
+
+var buttonHighlight = button.clone();
+buttonHighlight.strokeColor = COLOR_CURSOR;
+buttonHighlight.strokeWidth = 2;
+buttonHighlight.visible = false;
+
+var buttonText = new PointText(new Point(UI_POS_X+100, 380));
+buttonText.fillColor = COLOR_BUTTON;
+buttonText.justification = "center";
+buttonText.content = "Restart";
+buttonText.fontSize = 25;
+
+
 
 
 
@@ -101,6 +125,7 @@ function onKeyUp(event){
         // Game end
         if(_.every(panels, function(row){return _.every(row, function(p){return !p.visible;});})){
           console.log("Game end");
+          //TODO: UI
         }
 
       }
