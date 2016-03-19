@@ -19,59 +19,75 @@ var COLOR_CURSOR = "#ff0000";
 var UI_POS_X = GRID_COLS*GRID_SIZE + 100;  // px
 var UI_SIZE_X = 200;  // px
 
+var availableColors, actual, covers, panels, openPanels;
+var gameLayer;
+
 // Populate grid with random paired colors
-var availableColors = _.take(COLORS, GRID_ROWS*GRID_COLS/2);
-var actual = _.chunk(_.shuffle(_.concat(availableColors, availableColors)), GRID_ROWS);
-var covers = [];
-var panels = [];
+function newGame(){
+  gameLayer = new Layer();
 
-// Draw grid
-for (var i = 0; i < GRID_ROWS; i++) {
-  covers[i] = [];
-  panels[i] = [];
+  availableColors = _.take(COLORS, GRID_ROWS*GRID_COLS/2);
+  actual = _.chunk(_.shuffle(_.concat(availableColors, availableColors)), GRID_ROWS);
+  covers = [];
+  panels = [];
+  openPanels = [];
 
-  for (var j = 0; j < GRID_COLS; j++) {
-    var rect = new Rectangle(new Point(j*GRID_SIZE, i*GRID_SIZE), new Size(GRID_SIZE, GRID_SIZE));
-    var panel = new Path.Rectangle(rect);
-    panel.strokeColor = COLOR_BORDER;
-    panel.fillColor = actual[i][j];
-    
-    var cover = panel.clone();
-    cover.fillColor = COLOR_COVER;
-    
-    covers[i][j] = cover;
-    panels[i][j] = panel;
+  // Draw grid
+  for (var i = 0; i < GRID_ROWS; i++) {
+    covers[i] = [];
+    panels[i] = [];
+
+    for (var j = 0; j < GRID_COLS; j++) {
+      var rect = new Rectangle(new Point(j*GRID_SIZE, i*GRID_SIZE), new Size(GRID_SIZE, GRID_SIZE));
+      var panel = new Path.Rectangle(rect);
+      panel.strokeColor = COLOR_BORDER;
+      panel.fillColor = actual[i][j];
+      
+      var cover = panel.clone();
+      cover.fillColor = COLOR_COVER;
+      
+      covers[i][j] = cover;
+      panels[i][j] = panel;
+    }
+
   }
 
+  gameLayer.sendToBack();
 }
 
+var border, cursor, button, buttonHighlight, buttonText;
+var uiLayer;
 
-var border = new Path.Rectangle(new Rectangle(new Point(0, 0), new Size(GRID_SIZE*GRID_COLS, GRID_SIZE*GRID_ROWS)));
-border.strokeColor = COLOR_BORDER;
+function drawUi(){
+  uiLayer = new Layer();
 
-
-// Draw cursor
-var cursor = new Path.Rectangle(new Rectangle(new Point(0, 0), new Size(GRID_SIZE, GRID_SIZE)));
-cursor.strokeColor = COLOR_CURSOR;
-cursor.strokeWidth = 2;
-cursor.i = 0;
-cursor.j = 0;
+  border = new Path.Rectangle(new Rectangle(new Point(0, 0), new Size(GRID_SIZE*GRID_COLS, GRID_SIZE*GRID_ROWS)));
+  border.strokeColor = COLOR_BORDER;
 
 
-var button = new Path.Rectangle(new Rectangle(new Point(UI_POS_X, 350), new Size(200, 50)));
-button.strokeColor = COLOR_BORDER;
+  // Draw cursor
+  cursor = new Path.Rectangle(new Rectangle(new Point(0, 0), new Size(GRID_SIZE, GRID_SIZE)));
+  cursor.strokeColor = COLOR_CURSOR;
+  cursor.strokeWidth = 2;
+  cursor.i = 0;
+  cursor.j = 0;
+  cursor.isOnButton = false;
 
-var buttonHighlight = button.clone();
-buttonHighlight.strokeColor = COLOR_CURSOR;
-buttonHighlight.strokeWidth = 2;
-buttonHighlight.visible = false;
 
-var buttonText = new PointText(new Point(UI_POS_X+100, 380));
-buttonText.fillColor = COLOR_BUTTON;
-buttonText.justification = "center";
-buttonText.content = "Restart";
-buttonText.fontSize = 25;
+  button = new Path.Rectangle(new Rectangle(new Point(UI_POS_X, 350), new Size(200, 50)));
+  button.strokeColor = COLOR_BORDER;
 
+  buttonHighlight = button.clone();
+  buttonHighlight.strokeColor = COLOR_CURSOR;
+  buttonHighlight.strokeWidth = 2;
+  buttonHighlight.visible = false;
+
+  buttonText = new PointText(new Point(UI_POS_X+100, 380));
+  buttonText.fillColor = COLOR_BUTTON;
+  buttonText.justification = "center";
+  buttonText.content = "Restart";
+  buttonText.fontSize = 25;
+}
 
 
 
@@ -79,36 +95,41 @@ buttonText.fontSize = 25;
 function onKeyDown(event){
   var key = event.key;
   
-  if(key === "up" && cursor.i > 0){
+  if(key === "up" && cursor.i > 0 && !cursor.isOnButton){
     cursor.i--;
     cursor.position -= new Point(0, GRID_SIZE);
   }
-  else if(key === "down" && cursor.i < GRID_ROWS-1){
+  else if(key === "down" && cursor.i < GRID_ROWS-1 && !cursor.isOnButton){
     cursor.i++;
     cursor.position += new Point(0, GRID_SIZE);
   }
 
-  if(key === "left" && cursor.j > 0){
+  if(key === "left" && cursor.j > 0 && !cursor.isOnButton){
     cursor.j--;
     cursor.position -= new Point(GRID_SIZE, 0);
   }
-  else if(key === "right" && cursor.j < GRID_COLS-1){
+  else if(key === "right" && cursor.j < GRID_COLS-1 && !cursor.isOnButton){
     cursor.j++;
     cursor.position += new Point(GRID_SIZE, 0);
   }
+  else if(key === "left" && cursor.j === GRID_COLS-1 && cursor.isOnButton){
+    buttonHighlight.visible = false;
+    cursor.visible = true;
+    cursor.isOnButton = false;
+  }
+  else if(key === "right" && cursor.j === GRID_COLS-1 && !cursor.isOnButton){
+    buttonHighlight.visible = true;
+    cursor.visible = false;
+    cursor.isOnButton = true;
+  }
 }
-
-var openPanels = [];
 
 function onKeyUp(event){
   var key = event.key;
   var isNotSamePanel = (openPanels.length === 0) || !(openPanels[0].i === cursor.i && openPanels[0].j === cursor.j);
+  var isVisiblePanel = panels[cursor.i][cursor.j].visible && covers[cursor.i][cursor.j].visible;
 
-  if(key === "enter" &&
-    isNotSamePanel &&
-    panels[cursor.i][cursor.j].visible &&
-    covers[cursor.i][cursor.j].visible){
-
+  if(key === "enter" && !cursor.isOnButton && isNotSamePanel && isVisiblePanel){
     covers[cursor.i][cursor.j].visible = false;
     openPanels.push({i: cursor.i, j: cursor.j});
 
@@ -140,4 +161,13 @@ function onKeyUp(event){
     }
 
   }
+  else if(key === "enter" && cursor.isOnButton){
+    gameLayer.remove();
+    newGame();
+  }
 }
+
+
+
+newGame();
+drawUi();
