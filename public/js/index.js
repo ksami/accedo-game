@@ -39,7 +39,7 @@ for (var i = 0; i < GRID_ROWS; i++) {
 var cursor = new Path.Rectangle(new Rectangle(new Point(0, 0), new Size(SIZE, SIZE)));
 cursor.strokeColor = "red";
 cursor.fillColor = "white";
-cursor.opacity = 0.5;
+cursor.opacity = 0.45;
 cursor.i = 0;
 cursor.j = 0;
 
@@ -66,10 +66,25 @@ function onKeyDown(event){
   }
 }
 
+var openPanels = [];
+
 function onKeyUp(event){
   var key = event.key;
 
   if(key === "enter"){
     covers[cursor.i][cursor.j].visible = false;
+    openPanels.push({i: cursor.i, j: cursor.j});
+
+    if(openPanels.length !== 0 && openPanels.length%2 === 0){
+      var timer = setTimeout(function(){
+        var prev = openPanels.shift();
+        var curr = openPanels.shift();
+        covers[prev.i][prev.j].visible = true;
+        covers[curr.i][curr.j].visible = true;
+        console.log("timer done");
+      }, 1000);
+      console.log(timer);
+    }
+
   }
 }
