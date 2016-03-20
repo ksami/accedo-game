@@ -131,9 +131,7 @@ function onKeyUp(event){
 
         // Game end
         if(_.every(panels, function(row){return _.every(row, function(p){return !p.visible;});})){
-          console.log("Game end");
           endGame(gameScore);
-          //TODO: Game end
         }
 
       }
@@ -165,6 +163,3 @@ function onKeyUp(event){
 //////////
 newGame();
 drawUi();
-$("#test").click(function(){
-  endGame(gameScore);
-});

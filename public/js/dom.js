@@ -20,7 +20,7 @@ function endGame(score){
       $("#modalHighScoreTable > tbody").empty();
       
       _.each(scores, function(score, idx){
-        $("#modalHighScoreTable").append("<tr><td>"+(idx+1)+"</td><td>"+
+        $("#modalHighScoreTable").append("<tr><th scope='row'>"+(idx+1)+"</th><td>"+
           score.user.name+"</td><td>"+score.value+"</td></tr>");
       });
 
