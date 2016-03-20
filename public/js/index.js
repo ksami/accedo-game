@@ -57,7 +57,7 @@ function drawUi(){
   cursor.isOnButton = false;
 
 
-  button = new Path.Rectangle(new Rectangle(new Point(UI_POS_X, 350), new Size(200, 50)));
+  button = new Path.Rectangle(new Rectangle(new Point(paper.view.viewSize.width-220, 350), new Size(200, 50)));
   button.strokeColor = COLOR_BORDER;
 
   buttonHighlight = button.clone();
@@ -65,7 +65,7 @@ function drawUi(){
   buttonHighlight.strokeWidth = 2;
   buttonHighlight.visible = false;
 
-  buttonText = new PointText(new Point(UI_POS_X+100, 380));
+  buttonText = new PointText(new Point(paper.view.viewSize.width-120, 380));
   buttonText.fillColor = COLOR_BUTTON;
   buttonText.justification = "center";
   buttonText.content = "Restart";

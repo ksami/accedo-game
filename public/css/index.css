@@ -1,15 +1,12 @@
 #game {
   width: 720px;
   height: 476px;
-  border-width: 1px;
-  border-color: black;
-  border-style: solid;
   padding: 20px;
 }
 
 #paperjs {
-  width: 700px;
-  height: 456px;
+  width: 680px;
+  height: 436px;
 }
 
 #uiContainer {
