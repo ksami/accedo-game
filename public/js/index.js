@@ -19,6 +19,8 @@ var COLOR_CURSOR = "#ff0000";
 var UI_POS_X = GRID_COLS*GRID_SIZE + 100;  // px
 var UI_SIZE_X = 200;  // px
 
+var gameScore = 0;
+
 var availableColors, actual, covers, panels, openPanels;
 var gameLayer;
 
@@ -31,6 +33,8 @@ function newGame(){
   covers = [];
   panels = [];
   openPanels = [];
+  gameScore = 0;
+  updateScore(gameScore);
 
   // Draw grid
   for (var i = 0; i < GRID_ROWS; i++) {
@@ -140,22 +144,29 @@ function onKeyUp(event){
 
       // Correctness condition
       if(actual[prev.i][prev.j] === actual[curr.i][curr.j]){
+        gameScore++;
+        updateScore(gameScore);
+
         panels[prev.i][prev.j].visible = false;
         panels[curr.i][curr.j].visible = false;
 
         // Game end
         if(_.every(panels, function(row){return _.every(row, function(p){return !p.visible;});})){
           console.log("Game end");
-          //TODO: UI
+          //TODO: Game end
         }
 
       }
       else{
+        gameScore--;
+        updateScore(gameScore);
+
         setTimeout(function(){
           covers[prev.i][prev.j].visible = true;
           covers[curr.i][curr.j].visible = true;
           paper.view.draw();
         }, TIME_VISIBLE);
+
       }
 
     }
@@ -168,6 +179,14 @@ function onKeyUp(event){
 }
 
 
+function updateScore(score){
+  document.getElementById("gameScore").innerHTML = score;
+}
 
+
+
+//////////
+// Main //
+//////////
 newGame();
 drawUi();
