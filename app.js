@@ -11,8 +11,19 @@ var _fileindex = __dirname + '/public/index.html';
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
-var fs = require('fs');
-app.use(express.static(__dirname + '/public'));
+var mongoose = require('mongoose');
+var path = require('path');
+
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Connect to database
+mongoose.connect('mongodb://localhost:27017/game');
+
+// Test db connection
+var db = mongoose.connection;
+db.on('error', function(){console.error('db connection error')});
+db.once('open', function() {console.log('db connected')});
 
 
 // Listen to <port>
@@ -20,7 +31,9 @@ http.listen(port, ipaddress, function(){
   console.log('listening on ' + ipaddress + ':' + port);
 });
 
-// Route handler
-app.get('/',function(req, res){
+// Routes
+app.get('/', function(req, res){
   res.sendfile(_fileindex);
 });
+
+app.use('/highscore', require('./routes').highscore);
