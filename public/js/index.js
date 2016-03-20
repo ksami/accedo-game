@@ -174,13 +174,16 @@ $("#test").click(function(){
 
   $.get("/highscore")
   .done(function(scores){
-    
     $("#modalHighScore").modal("show");
+    
     _.each(scores, function(score){
       $("#modalHighScoreTable").append("<tr><td>"+score.user.name+
         "</td><td>"+score.user.email+"</td><td>"+score.value+"</td></tr>");
     });
 
+  })
+  .fail(function(err){
+    console.log(err);
   });
 
 });

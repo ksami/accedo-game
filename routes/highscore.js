@@ -8,6 +8,8 @@ router.post('/submit', function(req, res){
 
 router.get('/', function(req, res){
   Score.find()
+  .select('-user.email')
+  .sort({value: 'desc'})
   .exec()
   .then(function(scores){
     res.send(scores);
