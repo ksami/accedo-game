@@ -132,7 +132,7 @@ function onKeyUp(event){
         // Game end
         if(_.every(panels, function(row){return _.every(row, function(p){return !p.visible;});})){
           console.log("Game end");
-          $("modalHighScore").modal("show");
+          endGame(gameScore);
           //TODO: Game end
         }
 
@@ -159,11 +159,6 @@ function onKeyUp(event){
 }
 
 
-function updateScore(score){
-  $("#gameScore").text(score);
-}
-
-
 
 //////////
 // Main //
@@ -171,19 +166,5 @@ function updateScore(score){
 newGame();
 drawUi();
 $("#test").click(function(){
-
-  $.get("/highscore")
-  .done(function(scores){
-    $("#modalHighScore").modal("show");
-    
-    _.each(scores, function(score){
-      $("#modalHighScoreTable").append("<tr><td>"+score.user.name+
-        "</td><td>"+score.user.email+"</td><td>"+score.value+"</td></tr>");
-    });
-
-  })
-  .fail(function(err){
-    console.log(err);
-  });
-
+  endGame(gameScore);
 });

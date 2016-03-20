@@ -11,6 +11,7 @@ var _fileindex = __dirname + '/public/index.html';
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
+var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var path = require('path');
 
@@ -36,4 +37,5 @@ app.get('/', function(req, res){
   res.sendfile(_fileindex);
 });
 
+app.use(bodyParser.urlencoded()); 
 app.use('/highscore', require('./routes').highscore);
