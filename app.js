@@ -7,8 +7,8 @@ var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 var ipaddress = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
 var dbport = process.env.OPENSHIFT_MONGODB_DB_PORT || 27017;
 var dbaddress = process.env.OPENSHIFT_MONGODB_DB_HOST || '127.0.0.1';
-var dbuser = process.env.OPENSHIFT_MONGODB_DB_USER || '';
-var dbpass = process.env.OPENSHIFT_MONGODB_DB_PASS || '';
+var dbuser = process.env.OPENSHIFT_MONGODB_DB_USERNAME || '';
+var dbpass = process.env.OPENSHIFT_MONGODB_DB_PASSWORD || '';
 var dbname = 'accedogame';
 var _fileindex = __dirname + '/public/index.html';
 
