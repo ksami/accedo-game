@@ -2,6 +2,7 @@
 
 ```
 npm install
+mkdir data
 ```
 
 
