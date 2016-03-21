@@ -5,6 +5,11 @@
 // Environment configurables
 var port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 var ipaddress = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+var dbport = process.env.OPENSHIFT_MONGODB_DB_PORT || 27017;
+var dbaddress = process.env.OPENSHIFT_MONGODB_DB_HOST || '127.0.0.1';
+var dbuser = process.env.OPENSHIFT_MONGODB_DB_USER || '';
+var dbpass = process.env.OPENSHIFT_MONGODB_DB_PASS || '';
+var dbname = 'accedogame';
 var _fileindex = __dirname + '/public/index.html';
 
 // Dependencies
@@ -19,7 +24,10 @@ var path = require('path');
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Connect to database
-mongoose.connect('mongodb://localhost:27017/game');
+mongoose.connect('mongodb://'+dbaddress+':'+dbport+'/'+dbname, {
+  user: dbuser,
+  pass: dbpass
+});
 
 // Test db connection
 var db = mongoose.connection;
@@ -37,5 +45,5 @@ app.get('/', function(req, res){
   res.sendfile(_fileindex);
 });
 
-app.use(bodyParser.urlencoded()); 
+app.use(bodyParser.urlencoded({extended: false})); 
 app.use('/highscore', require('./routes').highscore);
